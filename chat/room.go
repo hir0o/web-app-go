@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"fmt"
 	"github.com/gorilla/websocket"
+  "../trace"
 )
 
 type room struct {
@@ -12,6 +13,7 @@ type room struct {
  	join chan *client // チャットルームに参加しようとしているクライアントのチャネル
 	leave chan *client // チャットルームから退室しようとしているクライアントのチャネル
 	clients map[*client]bool // 在室しているクライアントが保持される
+  tracer trace.Tracer
 }
 
 func newRoom() *room {
@@ -20,6 +22,7 @@ func newRoom() *room {
 		join: make(chan *client),
 		leave: make(chan *client),
 		clients: make(map[*client]bool),
+    tracer: trace.Off(),
 	}
 }
 
@@ -30,6 +33,7 @@ func (r *room) run() {
       // 参加
 	  fmt.Println("参加した")
       r.clients[client] = true
+      r.tracer.Trace("新しいクライアントが参加しました")
     case client := <- r.leave:
       // 退室
 	  fmt.Println("退室した")

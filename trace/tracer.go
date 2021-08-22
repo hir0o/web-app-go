@@ -23,4 +23,9 @@ func (t *tracer) Trace( a...interface{}) {
 	t.out.Write([]byte("\n"))
 }
 
+type nulTracer struct{}
 
+func (t *nulTracer) Trace( a...interface{}) {}
+func Off() Tracer {
+	return &nulTracer{}
+}
